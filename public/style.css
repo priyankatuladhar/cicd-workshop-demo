@@ -118,7 +118,7 @@ body.dark-mode .priority {
 
 header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 40px;
     color: #002E2C;
     padding: 20px 0;
@@ -128,11 +128,13 @@ header {
 .header-content {
     text-align: center;
     width: 100%;
+    margin-top: 10px;
 }
 
 .header-actions {
     position: absolute;
     right: 0;
+    top: 20px;
     display: flex;
     gap: 10px;
     align-items: center;
