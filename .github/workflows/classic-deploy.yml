@@ -43,8 +43,8 @@ jobs:
         REMOTE_USER: ${{ secrets.USERNAME }}
         SOURCE: "/"
         TARGET: "app"
-        POST_DEPLOY_CMD: "cd app && npm install && pm2 restart app || pm2 start app.js --name app"
-
+        ARGS: "-rlgoDzvc -i --delete"
+        SCRIPT_AFTER: "cd app && npm install && pm2 restart app || pm2 start src/app.js --name app"
   cd-verify:
     name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
