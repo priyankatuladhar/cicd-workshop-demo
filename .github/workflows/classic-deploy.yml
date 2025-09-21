@@ -1,0 +1,31 @@
+name: Deploy Classic to VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Deploy to VM
+      uses: easingthemes/ssh-deploy@v5.0.0
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        SOURCE: "/"
+        TARGET: "app"
+        POST_DEPLOY_CMD: "cd app && npm install && pm2 restart app || pm2 start app.js --name app"
