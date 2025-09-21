@@ -1,4 +1,4 @@
-name: Test Docker Build
+name: CI Build Validation
 
 on:
   push:
@@ -7,8 +7,9 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: 🧪 Run Tests
+  # ==================== CI PHASE ====================
+  ci-test:
+    name: 🔍 CI - Run Tests
     runs-on: ubuntu-latest
     
     steps:
@@ -26,10 +27,10 @@ jobs:
     - name: Run tests
       run: npm test
 
-  build:
-    name: 🐳 Build Docker Image
+  ci-build:
+    name: 🐳 CI - Build Docker
     runs-on: ubuntu-latest
-    needs: test
+    needs: ci-test
     
     steps:
     - name: Checkout repository
@@ -41,14 +42,15 @@ jobs:
     - name: Verify image exists
       run: docker images test-image
 
+  # ==================== VALIDATION ====================
   validate:
-    name: ✅ Validate Build
+    name: ✅ Validate Pipeline
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [ci-test, ci-build]
     
     steps:
-    - name: Build Summary
+    - name: Validation Summary
       run: |
-        echo "✅ Tests passed successfully!"
-        echo "✅ Docker image built successfully!"
-        echo "🚀 Ready for deployment!"
+        echo "🔍 CI Phase: Tests & build completed"
+        echo "✅ Pipeline validation successful!"
+        echo "🚀 Ready for deployment workflows!"

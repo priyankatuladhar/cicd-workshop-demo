@@ -1,12 +1,13 @@
-name: Deploy Classic to VM
+name: Classic CI/CD Pipeline
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test:
-    name: 🧪 Test Application
+  # ==================== CI PHASE ====================
+  ci-test:
+    name: 🔍 CI - Test Code
     runs-on: ubuntu-latest
     
     steps:
@@ -24,10 +25,11 @@ jobs:
     - name: Run tests
       run: npm test
 
-  deploy:
-    name: 🚀 Deploy to VM
+  # ==================== CD PHASE ====================
+  cd-deploy:
+    name: 🚀 CD - Deploy to VM
     runs-on: ubuntu-latest
-    needs: test
+    needs: ci-test
     
     steps:
     - name: Checkout repository
@@ -43,15 +45,14 @@ jobs:
         TARGET: "app"
         POST_DEPLOY_CMD: "cd app && npm install && pm2 restart app || pm2 start app.js --name app"
 
-  verify:
-    name: ✅ Verify Deployment
+  cd-verify:
+    name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: cd-deploy
     
     steps:
-    - name: Deployment Summary
+    - name: Pipeline Summary
       run: |
-        echo "✅ Tests passed!"
-        echo "✅ Files deployed to VM!"
-        echo "✅ PM2 process started!"
-        echo "🎉 Classic deployment complete!"
+        echo "🔍 CI Phase: Code tested & validated"
+        echo "🚀 CD Phase: Files deployed to VM"
+        echo "✅ Classic CI/CD Pipeline Complete!"

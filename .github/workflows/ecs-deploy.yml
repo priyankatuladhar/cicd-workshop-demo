@@ -5,8 +5,9 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: 🧪 Test Application
+  # ==================== CI PHASE ====================
+  ci-test:
+    name: 🔍 CI - Test Code
     runs-on: ubuntu-latest
     
     steps:
@@ -24,10 +25,10 @@ jobs:
     - name: Run tests
       run: npm test
 
-  build:
-    name: 🏗️ Build & Push to ECR
+  ci-build:
+    name: 🏗️ CI - Build & Push ECR
     runs-on: ubuntu-latest
-    needs: test
+    needs: ci-test
     
     steps:
     - name: Checkout repository
@@ -55,10 +56,11 @@ jobs:
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-  deploy:
-    name: 🚀 Deploy to ECS
+  # ==================== CD PHASE ====================
+  cd-deploy:
+    name: 🚀 CD - Deploy ECS
     runs-on: ubuntu-latest
-    needs: build
+    needs: ci-build
     
     steps:
     - name: Configure AWS credentials
@@ -79,15 +81,14 @@ jobs:
           --service ${{ secrets.ECS_SERVICE_NAME }} \
           --force-new-deployment
 
-  verify:
-    name: ✅ Verify Deployment
+  cd-verify:
+    name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: cd-deploy
     
     steps:
-    - name: Deployment Summary
+    - name: Pipeline Summary
       run: |
-        echo "✅ Tests passed!"
-        echo "✅ Image built & pushed to ECR!"
-        echo "✅ ECS service updated!"
-        echo "🎉 AWS ECS deployment complete!"
+        echo "🔍 CI Phase: Code tested & ECR image built"
+        echo "🚀 CD Phase: ECS service deployed"
+        echo "✅ AWS ECS CI/CD Pipeline Complete!"
