@@ -110,6 +110,18 @@ body.dark-mode .priority {
     color: #EBD494;
 }
 
+body.dark-mode .api-docs {
+    color: #FEFFBE;
+}
+
+body.dark-mode .desc {
+    color: #D7EBBA;
+}
+
+body.dark-mode .path {
+    color: #9AD2CB;
+}
+
 body.dark-mode header h1 {
     background: linear-gradient(45deg, #FEFFBE, #D7EBBA);
     -webkit-background-clip: text;
@@ -542,36 +554,36 @@ button:hover {
 }
 
 .btn-pending {
-    background: #6c757d;
-    color: white;
+    background: #9AD2CB;
+    color: #472836;
 }
 
 .btn-progress {
-    background: #ffc107;
-    color: #212529;
+    background: #EBD494;
+    color: #472836;
 }
 
 .btn-complete {
-    background: #28a745;
-    color: white;
+    background: #D7EBBA;
+    color: #472836;
 }
 
 .btn-delete {
-    background: #dc3545;
-    color: white;
+    background: #E8B4B8;
+    color: #472836;
 }
 
 .btn-delete:hover {
-    background: #c82333;
+    background: #D7A3A8;
 }
 
 .btn-edit {
-    background: #007bff;
-    color: white;
+    background: #B8D4E3;
+    color: #472836;
 }
 
 .btn-edit:hover {
-    background: #0056b3;
+    background: #A8C4D3;
 }
 
 textarea {
