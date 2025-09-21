@@ -556,6 +556,15 @@ button:hover {
     color: white;
 }
 
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
 textarea {
     padding: 12px;
     border: 2px solid #e1e5e9;

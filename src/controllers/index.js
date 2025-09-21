@@ -84,6 +84,22 @@ const updateTask = (req, res) => {
     });
 };
 
+const deleteTask = (req, res) => {
+    const { id } = req.params;
+    const taskIndex = tasks.findIndex(t => t.id === parseInt(id));
+    
+    if (taskIndex === -1) {
+        return res.status(404).json({ error: 'Task not found' });
+    }
+    
+    const deletedTask = tasks.splice(taskIndex, 1)[0];
+    
+    res.json({
+        message: 'Task deleted successfully',
+        data: deletedTask
+    });
+};
+
 const getHealth = (req, res) => {
     res.json({
         status: 'OK',
@@ -92,4 +108,4 @@ const getHealth = (req, res) => {
     });
 };
 
-module.exports = { getTasks, createTask, updateTask, getHealth };
+module.exports = { getTasks, createTask, updateTask, deleteTask, getHealth };

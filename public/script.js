@@ -96,10 +96,10 @@ async function loadTasks() {
     const priorityFilter = document.getElementById('priorityFilter');
     
     const params = new URLSearchParams();
-    if (searchInput?.value) params.append('search', searchInput.value);
-    if (categoryFilter?.value) params.append('category', categoryFilter.value);
-    if (statusFilter?.value) params.append('status', statusFilter.value);
-    if (priorityFilter?.value) params.append('priority', priorityFilter.value);
+    if (searchInput && searchInput.value) params.append('search', searchInput.value);
+    if (categoryFilter && categoryFilter.value) params.append('category', categoryFilter.value);
+    if (statusFilter && statusFilter.value) params.append('status', statusFilter.value);
+    if (priorityFilter && priorityFilter.value) params.append('priority', priorityFilter.value);
     
     try {
         const response = await fetch(`/api/tasks?${params}`);
@@ -146,6 +146,7 @@ async function loadTasks() {
                             ${task.status !== 'pending' ? `<button class="btn-small btn-pending" onclick="updateTaskStatus(${task.id}, 'pending')">To Do</button>` : ''}
                             ${task.status !== 'in-progress' ? `<button class="btn-small btn-progress" onclick="updateTaskStatus(${task.id}, 'in-progress')">In Progress</button>` : ''}
                             ${task.status !== 'completed' ? `<button class="btn-small btn-complete" onclick="updateTaskStatus(${task.id}, 'completed')">Complete</button>` : ''}
+                            <button class="btn-small btn-delete" onclick="deleteTask(${task.id})">Delete</button>
                         </div>
                     </div>
                 `;
@@ -276,5 +277,26 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// Delete task function
+async function deleteTask(taskId) {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+    
+    try {
+        const response = await fetch(`/api/tasks/${taskId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showNotification('Task deleted successfully', 'success');
+            loadTasks();
+        } else {
+            showNotification('Error deleting task', 'error');
+        }
+    } catch (error) {
+        showNotification('Error deleting task', 'error');
+    }
+}
+
 // Load tasks button
-document.getElementById('loadTasks').addEventListener('click', loadTasks);
+const loadTasksBtn = document.getElementById('loadTasks');
+if (loadTasksBtn) loadTasksBtn.addEventListener('click', loadTasks);
