@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
     initializeDarkMode();
     
+    // Direct search listener
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            loadTasks();
+        });
+    }
+    
     // Auto-refresh every 30 seconds
     setInterval(() => {
         checkStatus();
