@@ -1,3 +1,6 @@
+git add .
+git commit -m "test classic deployment"
+git push origin main
 # Dependencies
 node_modules
 npm-debug.log*
