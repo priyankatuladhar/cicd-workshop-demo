@@ -1,49 +1,78 @@
-# name: Deploy Docker to VM
+name: Deploy Docker to VM
 
-# on:
-#   push:
-#     branches: [ main ]
+on:
+  push:
+    branches: [ main ]
 
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  test:
+    name: 🧪 Test Application
+    runs-on: ubuntu-latest
     
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
       
-#     - name: Set up Node.js 18
-#       uses: actions/setup-node@v4
-#       with:
-#         node-version: '18'
+    - name: Set up Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
         
-#     - name: Install dependencies
-#       run: npm install
+    - name: Install dependencies
+      run: npm install
       
-#     - name: Run tests
-#       run: npm test
+    - name: Run tests
+      run: npm test
+
+  build:
+    name: 🐳 Build & Push Image
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
       
-#     - name: Log in to Docker Hub
-#       uses: docker/login-action@v2
-#       with:
-#         username: ${{ secrets.DOCKERHUB_USERNAME }}
-#         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
         
-#     - name: Build and push Docker image
-#       uses: docker/build-push-action@v4
-#       with:
-#         context: .
-#         push: true
-#         tags: ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
-        
-#     - name: Deploy to VM
-#       uses: appleboy/ssh-action@master
-#       with:
-#         host: ${{ secrets.HOST }}
-#         username: ${{ secrets.USERNAME }}
-#         key: ${{ secrets.SSH_PRIVATE_KEY }}
-#         script: |
-#           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
-#           docker stop my-app-container || true
-#           docker rm my-app-container || true
-#           docker run -d -p 8080:8080 --name my-app-container ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+
+  deploy:
+    name: 🚀 Deploy Container
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Deploy to VM via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+          docker stop my-app-container || true
+          docker rm my-app-container || true
+          docker run -d -p 8080:8080 --name my-app-container ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+
+  verify:
+    name: ✅ Verify Deployment
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+    - name: Deployment Summary
+      run: |
+        echo "✅ Tests passed!"
+        echo "✅ Docker image built & pushed!"
+        echo "✅ Container deployed to VM!"
+        echo "🎉 Docker deployment complete!"

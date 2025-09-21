@@ -1,34 +1,57 @@
-# name: Deploy Classic to VM
+name: Deploy Classic to VM
 
-# on:
-#   push:
-#     branches: [ main ]
+on:
+  push:
+    branches: [ main ]
 
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  test:
+    name: 🧪 Test Application
+    runs-on: ubuntu-latest
     
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
       
-#     - name: Set up Node.js 18
-#       uses: actions/setup-node@v4
-#       with:
-#         node-version: '18'
+    - name: Set up Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
         
-#     - name: Install dependencies
-#       run: npm install
+    - name: Install dependencies
+      run: npm install
       
-#     - name: Run tests
-#       run: npm test
+    - name: Run tests
+      run: npm test
+
+  deploy:
+    name: 🚀 Deploy to VM
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
       
-#     - name: Deploy to VM
-#       uses: easingthemes/ssh-deploy@v5.0.0
-#       with:
-#         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#         REMOTE_HOST: ${{ secrets.HOST }}
-#         REMOTE_USER: ${{ secrets.USERNAME }}
-#         SOURCE: "/"
-#         TARGET: "app"
-#         POST_DEPLOY_CMD: "cd app && npm install && pm2 restart app || pm2 start app.js --name app"
+    - name: Deploy files via SSH
+      uses: easingthemes/ssh-deploy@v5.0.0
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        SOURCE: "/"
+        TARGET: "app"
+        POST_DEPLOY_CMD: "cd app && npm install && pm2 restart app || pm2 start app.js --name app"
+
+  verify:
+    name: ✅ Verify Deployment
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+    - name: Deployment Summary
+      run: |
+        echo "✅ Tests passed!"
+        echo "✅ Files deployed to VM!"
+        echo "✅ PM2 process started!"
+        echo "🎉 Classic deployment complete!"
