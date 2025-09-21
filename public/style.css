@@ -88,6 +88,28 @@ body.dark-mode .stat-label {
     color: #D7EBBA;
 }
 
+body.dark-mode .task-title {
+    color: #FEFFBE;
+}
+
+body.dark-mode .task-description {
+    color: #D7EBBA;
+}
+
+body.dark-mode .task-meta {
+    color: #9AD2CB;
+}
+
+body.dark-mode .task-status {
+    background: rgba(154, 210, 203, 0.2);
+    color: #FEFFBE;
+}
+
+body.dark-mode .priority {
+    background: rgba(235, 212, 148, 0.2);
+    color: #EBD494;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
