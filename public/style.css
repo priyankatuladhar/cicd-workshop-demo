@@ -110,6 +110,13 @@ body.dark-mode .priority {
     color: #EBD494;
 }
 
+body.dark-mode header h1 {
+    background: linear-gradient(45deg, #FEFFBE, #D7EBBA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -165,6 +172,9 @@ header p {
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
     color: #472836;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-icon:hover {
