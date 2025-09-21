@@ -37,12 +37,18 @@ function initializeFilters() {
     const statusFilter = document.getElementById('statusFilter');
     const priorityFilter = document.getElementById('priorityFilter');
     
+    console.log('Search input found:', !!searchInput);
+    
     // Debounced search
     let searchTimeout;
     if (searchInput) {
-        searchInput.addEventListener('input', () => {
+        searchInput.addEventListener('input', (e) => {
+            console.log('Search input changed:', e.target.value);
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => loadTasks(), 300);
+            searchTimeout = setTimeout(() => {
+                console.log('Loading tasks with search:', e.target.value);
+                loadTasks();
+            }, 300);
         });
     }
     
@@ -96,10 +102,15 @@ async function loadTasks() {
     const priorityFilter = document.getElementById('priorityFilter');
     
     const params = new URLSearchParams();
-    if (searchInput && searchInput.value) params.append('search', searchInput.value);
+    if (searchInput && searchInput.value) {
+        console.log('Adding search param:', searchInput.value);
+        params.append('search', searchInput.value);
+    }
     if (categoryFilter && categoryFilter.value) params.append('category', categoryFilter.value);
     if (statusFilter && statusFilter.value) params.append('status', statusFilter.value);
     if (priorityFilter && priorityFilter.value) params.append('priority', priorityFilter.value);
+    
+    console.log('API URL:', `/api/tasks?${params}`);
     
     try {
         const response = await fetch(`/api/tasks?${params}`);
