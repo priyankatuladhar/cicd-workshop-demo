@@ -69,7 +69,7 @@ const createTask = (req, res) => {
 
 const updateTask = (req, res) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, title, description, priority, category, dueDate, assignee } = req.body;
     
     const task = tasks.find(t => t.id === parseInt(id));
     if (!task) {
@@ -77,6 +77,12 @@ const updateTask = (req, res) => {
     }
     
     if (status) task.status = status;
+    if (title) task.title = title;
+    if (description !== undefined) task.description = description;
+    if (priority) task.priority = priority;
+    if (category) task.category = category;
+    if (dueDate !== undefined) task.dueDate = dueDate;
+    if (assignee !== undefined) task.assignee = assignee;
     
     res.json({
         message: 'Task updated successfully',

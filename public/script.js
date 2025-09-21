@@ -117,6 +117,7 @@ async function loadTasks() {
         }
         
         if (data.data && data.data.length > 0) {
+            currentTasks = data.data;
             // Render tasks with enhanced UI
             tasksListEl.innerHTML = data.data.map(task => {
                 const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed';
@@ -146,6 +147,7 @@ async function loadTasks() {
                             ${task.status !== 'pending' ? `<button class="btn-small btn-pending" onclick="updateTaskStatus(${task.id}, 'pending')">To Do</button>` : ''}
                             ${task.status !== 'in-progress' ? `<button class="btn-small btn-progress" onclick="updateTaskStatus(${task.id}, 'in-progress')">In Progress</button>` : ''}
                             ${task.status !== 'completed' ? `<button class="btn-small btn-complete" onclick="updateTaskStatus(${task.id}, 'completed')">Complete</button>` : ''}
+                            <button class="btn-small btn-edit" onclick="editTask(${task.id})">Edit</button>
                             <button class="btn-small btn-delete" onclick="deleteTask(${task.id})">Delete</button>
                         </div>
                     </div>
@@ -207,6 +209,10 @@ async function updateTaskStatus(taskId, status) {
 document.getElementById('taskForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    const form = e.target;
+    const editId = form.dataset.editId;
+    const isEdit = !!editId;
+    
     const formData = {
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
@@ -217,8 +223,11 @@ document.getElementById('taskForm').addEventListener('submit', async function(e)
     };
     
     try {
-        const response = await fetch('/api/tasks', {
-            method: 'POST',
+        const url = isEdit ? `/api/tasks/${editId}` : '/api/tasks';
+        const method = isEdit ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -227,14 +236,15 @@ document.getElementById('taskForm').addEventListener('submit', async function(e)
         
         if (response.ok) {
             // Reset form
-            document.getElementById('taskForm').reset();
+            form.reset();
+            form.removeAttribute('data-edit-id');
             document.getElementById('priority').value = 'medium';
             document.getElementById('category').value = 'Development';
             
             // Show success animation
             const submitBtn = document.querySelector('.btn-primary');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = '✓ Created!';
+            const originalText = '✨ Create Task';
+            submitBtn.textContent = isEdit ? '✓ Updated!' : '✓ Created!';
             submitBtn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
             
             setTimeout(() => {
@@ -248,7 +258,7 @@ document.getElementById('taskForm').addEventListener('submit', async function(e)
             showNotification('Error: ' + error.error, 'error');
         }
     } catch (error) {
-        showNotification('Error creating task', 'error');
+        showNotification(isEdit ? 'Error updating task' : 'Error creating task', 'error');
     }
 });
 
@@ -275,6 +285,26 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.remove();
     }, 3000);
+}
+
+// Store tasks globally for edit function
+let currentTasks = [];
+
+// Edit task function
+function editTask(taskId) {
+    const task = currentTasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    document.getElementById('title').value = task.title;
+    document.getElementById('description').value = task.description;
+    document.getElementById('priority').value = task.priority;
+    document.getElementById('category').value = task.category;
+    document.getElementById('dueDate').value = task.dueDate || '';
+    document.getElementById('assignee').value = task.assignee;
+    
+    const form = document.getElementById('taskForm');
+    form.dataset.editId = taskId;
+    document.querySelector('.btn-primary').textContent = '✏️ Update Task';
 }
 
 // Delete task function
