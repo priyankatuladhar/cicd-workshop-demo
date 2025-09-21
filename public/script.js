@@ -235,7 +235,7 @@ document.getElementById('taskForm').addEventListener('submit', async function(e)
             
             setTimeout(() => {
                 submitBtn.textContent = originalText;
-                submitBtn.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+                submitBtn.style.background = 'linear-gradient(45deg, #8B7355, #A0937D)';
             }, 2000);
             
             loadTasks(); // Refresh the list
