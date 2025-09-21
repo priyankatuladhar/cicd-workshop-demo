@@ -10,25 +10,71 @@
     <div class="container">
         <header>
             <h1>📋 Task Tracker Pro</h1>
-            <p>Modern task management with CI/CD pipeline</p>
+            <p>Advanced task management with real-time analytics</p>
+            <div class="header-actions">
+                <button id="darkModeToggle" class="btn-icon">🌙</button>
+                <button id="exportBtn" class="btn-icon">📄</button>
+            </div>
         </header>
 
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalTasks">0</div>
-                <div class="stat-label">Total Tasks</div>
+            <div class="stat-card total">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="completedTasks">0</div>
-                <div class="stat-label">Completed</div>
+            <div class="stat-card completed">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="inProgressTasks">0</div>
-                <div class="stat-label">In Progress</div>
+            <div class="stat-card progress">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="inProgressTasks">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingTasks">0</div>
-                <div class="stat-label">Pending</div>
+            <div class="stat-card pending">
+                <div class="stat-icon">🕰️</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            <div class="stat-card overdue">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="overdueTasks">0</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search tasks...">
+            </div>
+            <div class="filter-controls">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="priorityFilter">
+                    <option value="">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
             </div>
         </div>
 
@@ -39,16 +85,30 @@
 
         <div class="main-section">
             <div class="form-card">
-                <h3>➕ Add New Task</h3>
+                <h3>➕ Create New Task</h3>
                 <form id="taskForm">
-                    <input type="text" id="title" placeholder="Task Title" required>
+                    <div class="form-row">
+                        <input type="text" id="title" placeholder="Task Title" required>
+                        <select id="category">
+                            <option value="Development">Development</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="Testing">Testing</option>
+                            <option value="Documentation">Documentation</option>
+                            <option value="Deployment">Deployment</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
                     <textarea id="description" placeholder="Task Description" rows="3"></textarea>
-                    <select id="priority">
-                        <option value="low">Low Priority</option>
-                        <option value="medium" selected>Medium Priority</option>
-                        <option value="high">High Priority</option>
-                    </select>
-                    <button type="submit">Add Task</button>
+                    <div class="form-row">
+                        <select id="priority">
+                            <option value="low">Low Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                        <input type="date" id="dueDate">
+                    </div>
+                    <input type="text" id="assignee" placeholder="Assignee">
+                    <button type="submit" class="btn-primary">✨ Create Task</button>
                 </form>
             </div>
 
