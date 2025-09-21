@@ -39,17 +39,20 @@ function initializeFilters() {
     
     // Debounced search
     let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => loadTasks(), 300);
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadTasks(), 300);
+        });
+    }
     
-    categoryFilter.addEventListener('change', loadTasks);
-    statusFilter.addEventListener('change', loadTasks);
-    priorityFilter.addEventListener('change', loadTasks);
+    if (categoryFilter) categoryFilter.addEventListener('change', loadTasks);
+    if (statusFilter) statusFilter.addEventListener('change', loadTasks);
+    if (priorityFilter) priorityFilter.addEventListener('change', loadTasks);
     
     // Export functionality
-    document.getElementById('exportBtn').addEventListener('click', exportTasks);
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) exportBtn.addEventListener('click', exportTasks);
 }
 
 // Export tasks to JSON
