@@ -60,6 +60,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
         script: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
           docker stop my-app-container || true
