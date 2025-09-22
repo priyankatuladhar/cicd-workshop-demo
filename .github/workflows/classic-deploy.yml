@@ -35,19 +35,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # DEMO: This step would deploy to a cloud VM in production
-    # For workshop demo, this will timeout (expected behavior)
+    # Real deployment via serveo SSH tunnel with ProxyJump
     - name: Deploy files via SSH
-      uses: easingthemes/ssh-deploy@v5.0.0
+      uses: appleboy/ssh-action@master
       with:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        REMOTE_HOST: ${{ secrets.HOST }}
-        REMOTE_USER: ${{ secrets.USERNAME }}
-        REMOTE_PORT: 22
-        SOURCE: "/"
-        TARGET: "app"
-        ARGS: "-rlgoDzvc -i --delete"
-        SCRIPT_AFTER: "cd app && npm install && pm2 restart app || pm2 start src/app.js --name app"
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        proxy_host: serveo.net
+        proxy_username: serveo
+        proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/ubuntu
+          rm -rf app
+          git clone https://github.com/${{ github.repository }} app
+          cd app
+          npm install
+          pm2 restart app || pm2 start src/app.js --name app
   cd-verify:
     name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
