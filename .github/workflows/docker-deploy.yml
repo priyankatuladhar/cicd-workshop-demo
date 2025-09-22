@@ -54,18 +54,48 @@ jobs:
     needs: ci-build
     
     steps:
-    - name: Deploy container to VM
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    # Setup SSH and deploy Docker container via serveo tunnel
+    - name: Setup SSH and Deploy Container
+      run: |
+        # Setup SSH key
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        
+        # Add serveo.net to known hosts
+        ssh-keyscan serveo.net >> ~/.ssh/known_hosts
+        
+        # Deploy Docker container via SSH with ProxyJump
+        ssh -i ~/.ssh/deploy_key -o ProxyJump=serveo.net -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} '
+          echo "🚀 Starting Docker deployment..."
+          
+          # Check Docker installation
+          docker --version || { echo "Docker not installed!"; exit 1; }
+          
+          # Pull latest image
+          echo "📥 Pulling latest Docker image..."
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
-          docker stop my-app-container || true
-          docker rm my-app-container || true
-          docker run -d -p 8080:8080 --name my-app-container ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+          
+          # Stop and remove existing container
+          echo "🛑 Stopping existing container..."
+          docker stop my-app-container || echo "No container to stop"
+          docker rm my-app-container || echo "No container to remove"
+          
+          # Run new container
+          echo "▶️ Starting new container..."
+          docker run -d -p 8080:3000 --name my-app-container ${{ secrets.DOCKERHUB_USERNAME }}/cicd-workshop-demo:latest
+          
+          # Verify container is running
+          echo "✅ Container status:"
+          docker ps | grep my-app-container
+          
+          echo "🌐 Docker app running at: http://localhost:8080"
+          echo "📊 Container logs:"
+          docker logs my-app-container --tail 10
+        '
 
   cd-verify:
     name: ✅ CD - Verify Success
