@@ -35,8 +35,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # Deploy code using serveo tunnel
-    - name: Deploy code via SSH
+    # Deploy code via serveo tunnel
+    - name: Deploy code to VM
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
