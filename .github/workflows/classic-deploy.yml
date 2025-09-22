@@ -35,49 +35,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # Real deployment to VM
-    - name: Deploy Code to VM
-      uses: appleboy/ssh-action@master
+    # Deploy files using serveo tunnel
+    - name: Deploy files via SSH
+      uses: easingthemes/ssh-deploy@v5.0.0
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        timeout: 60s
-        script: |
-          echo "🚀 Starting deployment..."
-          
-          # Remove old app directory
-          rm -rf /home/ubuntu/app
-          
-          # Clone latest code
-          echo "📥 Cloning latest code..."
-          git clone https://github.com/${{ github.repository }}.git /home/ubuntu/app
-          
-          # Navigate to app directory
-          cd /home/ubuntu/app
-          
-          # Install dependencies
-          echo "📦 Installing dependencies..."
-          npm install
-          
-          # Stop existing PM2 process
-          echo "🛑 Stopping existing app..."
-          pm2 stop app || echo "No existing app to stop"
-          pm2 delete app || echo "No existing app to delete"
-          
-          # Start new app with PM2
-          echo "▶️ Starting new app..."
-          pm2 start src/app.js --name app
-          
-          # Save PM2 configuration
-          pm2 save
-          
-          echo "✅ Deployment completed successfully!"
-          echo "🌐 App running at: http://localhost:3000"
-          
-          # Show PM2 status
-          pm2 status
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        REMOTE_PORT: 22
+        SOURCE: "/"
+        TARGET: "app"
+        ARGS: "-rlgoDzvc -i --delete -e 'ssh -J serveo.net'"
+        SCRIPT_AFTER: "cd app && npm install && pm2 restart app || pm2 start src/app.js --name app"
   cd-verify:
     name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
