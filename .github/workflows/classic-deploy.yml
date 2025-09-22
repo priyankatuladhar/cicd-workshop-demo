@@ -35,17 +35,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # Deploy code via serveo tunnel
-    - name: Deploy code to VM
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        proxy_host: serveo.net
-        proxy_username: ${{ secrets.USERNAME }}
-        proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
+    # Setup SSH key and deploy via custom SSH command
+    - name: Setup SSH and Deploy
+      run: |
+        # Setup SSH key
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        
+        # Add serveo.net to known hosts
+        ssh-keyscan serveo.net >> ~/.ssh/known_hosts
+        
+        # Deploy via SSH with ProxyJump
+        ssh -i ~/.ssh/deploy_key -o ProxyJump=serveo.net -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} '
           echo "🚀 Starting deployment..."
           
           # Remove old app directory
@@ -79,6 +81,7 @@ jobs:
           
           # Show PM2 status
           pm2 status
+        '
   cd-verify:
     name: ✅ CD - Verify Success
     runs-on: ubuntu-latest
