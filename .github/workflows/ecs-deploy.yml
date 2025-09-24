@@ -49,14 +49,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-west-2
 
+      - name: Update Task Definition
+        env:
+          IMAGE_NAME_WITH_TAG: ${{ secrets.ECR_REPOSITORY_URI }}:${{ github.sha }}
+        run: |
+          aws ecs describe-task-definition --task-definition demo-task --query taskDefinition > task-def.json
+          jq --arg IMAGE "$IMAGE_NAME_WITH_TAG" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.placementConstraints) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' task-def.json > new-task-def.json
+          aws ecs register-task-definition --cli-input-json file://new-task-def.json
+
       - name: Deploy ECS Service
         env:
           AWS_ECS_SERVICE_NAME: ${{ secrets.ECS_SERVICE_NAME }}
           AWS_ECS_CLUSTER_NAME: ${{ secrets.ECS_CLUSTER_NAME }}
           AWS_REGION: us-west-2
         run: |
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition demo-task --query 'taskDefinition.family' --output text)
+          REVISION=$(aws ecs describe-task-definition --task-definition demo-task --query 'taskDefinition.revision' --output text)
           aws ecs update-service \
            --service ${AWS_ECS_SERVICE_NAME} \
            --cluster ${AWS_ECS_CLUSTER_NAME} \
            --region ${AWS_REGION} \
-           --force-new-deployment
+           --task-definition ${TASK_DEFINITION}:${REVISION}
