@@ -33,7 +33,7 @@ jobs:
         env:
           IMAGE_NAME_WITH_TAG: ${{ secrets.ECR_REPOSITORY_URI }}:${{ github.sha }}
         run: |
-          docker build . -f Dockerfile.prod -t ${IMAGE_NAME_WITH_TAG}
+          docker build . -f Dockerfile -t ${IMAGE_NAME_WITH_TAG}
           docker push ${IMAGE_NAME_WITH_TAG}
 
   cd:
