@@ -1,14 +1,14 @@
 {
-  "family": "cicd-workshop-demo",
+  "family": "demo-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
-  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::968894490018:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
-      "name": "cicd-workshop-demo",
-      "image": "YOUR_ECR_URI/cicd-workshop-demo:latest",
+      "name": "task-tracker",
+      "image": "968894490018.dkr.ecr.us-west-2.amazonaws.com/demo-repo:latest",
       "portMappings": [
         {
           "containerPort": 3000,
@@ -19,8 +19,8 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/cicd-workshop-demo",
-          "awslogs-region": "us-east-1",
+          "awslogs-group": "/ecs/demo",
+          "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }
       }
